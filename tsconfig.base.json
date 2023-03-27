@@ -80,6 +80,7 @@
       "@activepieces/piece-pipedrive": [
         "packages/pieces/pipedrive/src/index.ts"
       ],
+      "@activepieces/piece-pipefy": ["packages/pieces/pipefy/src/index.ts"],
       "@activepieces/piece-posthog": ["packages/pieces/posthog/src/index.ts"],
       "@activepieces/piece-rss": ["packages/pieces/rss/src/index.ts"],
       "@activepieces/piece-sendgrid": ["packages/pieces/sendgrid/src/index.ts"],

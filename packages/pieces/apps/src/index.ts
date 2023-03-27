@@ -46,6 +46,7 @@ import { trello } from '@activepieces/piece-trello';
 import { square } from '@activepieces/piece-square';
 import { delay } from '@activepieces/piece-delay';
 import { dataMapper } from '@activepieces/piece-data-mapper';
+import { pipefy } from '@activepieces/piece-pipefy';
 
 export const pieces: Piece[] = [
     airtable,
@@ -76,6 +77,7 @@ export const pieces: Piece[] = [
     mailchimp,
     openai,
     pipedrive,
+    pipefy,
     posthog,
     rssFeed,
     sendgrid,
