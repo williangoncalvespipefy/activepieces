@@ -1,9 +1,8 @@
-import { AuthenticationType, createAction, HttpRequest } from '@activepieces/framework';
-import { HttpMethod } from '@activepieces/framework';
+import { createAction } from '@activepieces/framework';
 import { httpClient } from '@activepieces/framework';
 import { Property } from '@activepieces/framework';
 
-import { CommonProps, GraphQLRequest, GraphqlRequestsHelper, PIPEFY_API_URL } from '../common';
+import { CommonProps, buildGraphqlHttpRequest, GraphqlRequest, GraphqlRequestsHelper } from '../common';
 
 export const moveCard = createAction({
 	name: 'move_card', // Must be a unique across the piece, this shouldn't be changed.
@@ -21,28 +20,18 @@ export const moveCard = createAction({
     card_id: Property.Number({
 			displayName: 'Card ID',
 			description: 'Pipefy Card ID of the card to be moved.',
-			required: false,
+			required: true,
 		}),
 	},
 	async run(context) {
-    const request: HttpRequest<GraphQLRequest> = {
-      method: HttpMethod.POST,
-      url: PIPEFY_API_URL,
-      body: GraphqlRequestsHelper.buildMoveCardRequest(context.propsValue.pipe_id as number, context.propsValue.phase_id as number),
-      authentication: {
-        type: AuthenticationType.BEARER_TOKEN,
-        token: context.propsValue.authentication,
-      }
-    }
+    const result = await httpClient.sendRequest<GraphqlRequest>(
+      buildGraphqlHttpRequest(
+        GraphqlRequestsHelper.buildMoveCardRequest(context.propsValue.pipe_id as number, context.propsValue.phase_id as number),
+        context.propsValue.authentication
+      )
+    )
 
-    const result = await httpClient.sendRequest<GraphQLRequest>(request)
     console.debug("Card move result", result)
-
-    if (result.status === 200) {
-      return result.body
-    }
-    
-    return result
+    return result.body
   }
 })
-

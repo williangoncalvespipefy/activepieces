@@ -1,11 +1,27 @@
+import { AuthenticationType, HttpMethod, HttpRequest } from "@activepieces/framework"
+
 export const PIPEFY_API_URL = "https://api.pipefy.com/graphql"
 
-export interface GraphQLRequest {
+export interface GraphqlRequest {
   query: string,
 }
 
+export function buildGraphqlHttpRequest<T>(body: GraphqlRequest, apiKey: string) : HttpRequest<GraphqlRequest> {
+  const request: HttpRequest<GraphqlRequest> = {
+    method: HttpMethod.POST,
+    url: PIPEFY_API_URL,
+    body,
+    authentication: {
+      type: AuthenticationType.BEARER_TOKEN,
+      token: apiKey,
+    },
+  }
+
+  return request
+}
+
 export const GraphqlRequestsHelper = {
-  buildMoveCardRequest: function (cardId: number, phaseId: number) : GraphQLRequest {
+  buildMoveCardRequest: function (cardId: number, phaseId: number) : GraphqlRequest {
     return {
       query: JSON.stringify(`mutation {
         moveCardToPhase(input:{
@@ -50,7 +66,7 @@ export const GraphqlRequestsHelper = {
       )
     }
   },
-  buildGetPipesListRequest: function (organization_id: number) : GraphQLRequest {
+  buildGetPipesListRequest: function (organization_id: number) : GraphqlRequest {
     return {
       query: `query {
         organization(id: ${organization_id}){
@@ -62,16 +78,71 @@ export const GraphqlRequestsHelper = {
       }`
     }
   },
-  buildGetPhasesListRequests: function (pipe_id: number): GraphQLRequest {
+  buildGetPhasesListRequest: function (pipeId: number) : GraphqlRequest {
     return  {
-      query: JSON.stringify(`query{
-      pipe(id: ${pipe_id}){
-        phases {
-          id
-          name
+      query: `query {
+        pipe(id: ${pipeId}){
+          phases {
+            id
+            name
+          }
         }
-        startFormPhaseId
-      }`)
+      }`
+    }
+  },
+  buildCreatePipeWebhookRequest: function (action: string, webhookUrl: string, pipeId: number) : GraphqlRequest {
+    return {
+      query: `mutation {
+        createWebhook(input: {
+            clientMutationId: "active-pieces-called-at-${Date.now}"
+            actions: "${action}"
+            name: "${action}"
+            url: "${webhookUrl}"
+            pipe_id: ${pipeId}
+          }) {
+          clientMutationId
+          webhook {
+            id
+            actions
+            headers
+            email
+            name
+            url
+          }
+        }
+      }`
+    }
+  },
+  buildCreatTableWebhookRequest: function (name: string, actions: string[], webhookUrl: string, tableId: number) : GraphqlRequest {
+    return {
+      query: `mutation {
+        createWebhook(input: {
+            clientMutationId: "active-pieces-called-at-${Date.now}"
+            name: "${name}"
+            url: "${webhookUrl}"
+            pipe_id: ${tableId}
+          }) {
+          clientMutationId
+          webhook {
+            id
+            actions
+            headers
+            email
+            name
+            url
+          }
+        }
+      }`
+    }
+  },
+  buildDeleteWebhookRequest: function (webhookId: number, clientMutationId: string) : GraphqlRequest {
+    return {
+      query: `mutation {
+        deleteWebhook(input: {id: ${webhookId}, clientMutationId: "${clientMutationId}") {
+          clientMutationId
+          success
+        }
+      }`
     }
   }
 }

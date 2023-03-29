@@ -16,8 +16,6 @@ interface PhaseListItem {
   name: string
 }
 
-
-
 export interface GetPipesListResponse {
   data: GetPipesListResponseData
 }
@@ -33,4 +31,23 @@ interface OrganizationPipesList {
 interface PipeListItem {
   id: number
   name: string
+}
+
+
+export interface CreatePipeWebhookResponse {
+  data: CreatePipeWebhookResponseData
+}
+
+interface CreatePipeWebhookResponseData {
+  clientMutationId: string
+  webhook: PipeWebhook
+}
+
+interface PipeWebhook {
+  id: number
+  actions: string
+  headers: string[]
+  email: string
+  name: string
+  url: string
 }

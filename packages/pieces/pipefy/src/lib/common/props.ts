@@ -1,11 +1,10 @@
-import { AuthenticationType, httpClient, HttpMethod, HttpRequest, Property } from "@activepieces/framework";
+import { httpClient, Property } from "@activepieces/framework";
 
 import { 
+  buildGraphqlHttpRequest,
   GetPhasesListResponse, 
   GetPipesListResponse, 
-  GraphQLRequest, 
   GraphqlRequestsHelper, 
-  PIPEFY_API_URL 
 } from ".";
 
 
@@ -25,7 +24,7 @@ export const CommonProps = {
   }),
   pipesList: Property.Dropdown({
     displayName: "Pipe",
-    refreshers: ["organization_id", "a"],
+    refreshers: ["organization_id", "authentication"],
     description: "Select a Pipe where you want to setup the card action.",
     required: true,
     options: async (propsValue) => {
@@ -39,7 +38,7 @@ export const CommonProps = {
 
 
       console.info(propsValue)
-      const listResponse = await getPipesList(propsValue["organization_id"] as number, (propsValue["authentication"] as string));
+      const listResponse = await getPipesList(propsValue["organization_id"] as number, propsValue["authentication"] as string);
       const options = listResponse.data.organization.pipes.map(phase => ({
         label: phase.name,
         value: phase.id,
@@ -48,12 +47,12 @@ export const CommonProps = {
       return {
         disabled: false,
         options,
-      };  
+      };
     }
   }),
   phasesList: Property.Dropdown({
     displayName: "Phase",
-    refreshers: ["pipe_id"],
+    refreshers: ["pipe_id", "authentication"],
     description: "Select the Phase you want to move the card.",
     required: true,
     options: async (propsValue) => {
@@ -65,8 +64,7 @@ export const CommonProps = {
         }
       }
   
-      console.debug(propsValue)
-      const listResponse = await getPhasesList(propsValue["pipe_id"] as number, propsValue["api_key"] as string);
+      const listResponse = await getPhasesList(propsValue["pipe_id"] as number, propsValue["authentication"] as string);
       const options = listResponse.data.pipe.phases.map(phase => ({
         label: phase.name,
         value: phase.id,
@@ -80,37 +78,26 @@ export const CommonProps = {
   })
 }
 
-async function getPipesList (organization_id: number, api_key: string) {
-  const request: HttpRequest<GraphQLRequest> = {
-    method: HttpMethod.POST,
-    url: PIPEFY_API_URL,
-    body: GraphqlRequestsHelper.buildGetPipesListRequest(organization_id),
-    authentication: {
-      type: AuthenticationType.BEARER_TOKEN,
-      token: api_key
-    }
-  }
-
-  const result = await httpClient.sendRequest<GetPipesListResponse>(request)
+async function getPipesList (organizationId: number, apiKey: string) {
+  const result = await httpClient.sendRequest<GetPipesListResponse>(
+    buildGraphqlHttpRequest(
+      GraphqlRequestsHelper.buildGetPipesListRequest(organizationId),
+      apiKey
+    )
+  )
 
   console.debug("Pipes List found", result)
   return result.body
 }
 
+async function getPhasesList (pipeId: number, apiKey: string) {
+  const result = await httpClient.sendRequest<GetPhasesListResponse>(
+    buildGraphqlHttpRequest(
+      GraphqlRequestsHelper.buildGetPhasesListRequest(pipeId),
+      apiKey
+    )
+  )
 
-async function getPhasesList (pipe_id: number, api_token: string) {
-  const request: HttpRequest<GraphQLRequest> = {
-    method: HttpMethod.POST,
-    url: PIPEFY_API_URL,
-    body: GraphqlRequestsHelper.buildGetPhasesListRequests(pipe_id),
-    authentication: {
-      type: AuthenticationType.BEARER_TOKEN,
-      token: api_token
-    }
-  }
-
-  const result = await httpClient.sendRequest<GetPhasesListResponse>(request)
-
-  console.debug("Phases List found", result)
+  console.debug("Phases List found", result.body)
   return result.body
 }
