@@ -6,7 +6,7 @@ export interface GraphqlRequest {
   query: string,
 }
 
-export function buildGraphqlHttpRequest<T>(body: GraphqlRequest, apiKey: string) : HttpRequest<GraphqlRequest> {
+export function buildGraphqlHttpRequest(body: GraphqlRequest, apiKey: string) : HttpRequest<GraphqlRequest> {
   const request: HttpRequest<GraphqlRequest> = {
     method: HttpMethod.POST,
     url: PIPEFY_API_URL,
@@ -20,10 +20,12 @@ export function buildGraphqlHttpRequest<T>(body: GraphqlRequest, apiKey: string)
   return request
 }
 
+export type PipeIdInput = string | number
+
 export const GraphqlRequestsHelper = {
-  buildMoveCardRequest: function (cardId: number, phaseId: number) : GraphqlRequest {
+  buildMoveCardRequest: function (cardId: number, phaseId: PipeIdInput) : GraphqlRequest {
     return {
-      query: JSON.stringify(`mutation {
+      query: `mutation {
         moveCardToPhase(input:{
           card_id: ${cardId}
           destination_phase_id: ${phaseId}
@@ -51,7 +53,7 @@ export const GraphqlRequestsHelper = {
               email
             }
             fields {
-              field {
+              field { 
                 id
                 label
               }
@@ -63,10 +65,9 @@ export const GraphqlRequestsHelper = {
           }
         }
       }`
-      )
     }
   },
-  buildGetPipesListRequest: function (organization_id: number) : GraphqlRequest {
+  buildGetPipesListRequest: function (organization_id: PipeIdInput) : GraphqlRequest {
     return {
       query: `query {
         organization(id: ${organization_id}){
@@ -78,7 +79,7 @@ export const GraphqlRequestsHelper = {
       }`
     }
   },
-  buildGetPhasesListRequest: function (pipeId: number) : GraphqlRequest {
+  buildGetPhasesListRequest: function (pipeId: PipeIdInput) : GraphqlRequest {
     return  {
       query: `query {
         pipe(id: ${pipeId}){
@@ -90,13 +91,13 @@ export const GraphqlRequestsHelper = {
       }`
     }
   },
-  buildCreatePipeWebhookRequest: function (action: string, webhookUrl: string, pipeId: number) : GraphqlRequest {
+  buildCreatePipeWebhookRequest: function (actions: string[], webhookUrl: string, pipeId: PipeIdInput) : GraphqlRequest {
     return {
       query: `mutation {
         createWebhook(input: {
             clientMutationId: "active-pieces-called-at-${Date.now}"
-            actions: "${action}"
-            name: "${action}"
+            actions: ${JSON.stringify(actions)}
+            name: "${actions}"
             url: "${webhookUrl}"
             pipe_id: ${pipeId}
           }) {
@@ -144,5 +145,246 @@ export const GraphqlRequestsHelper = {
         }
       }`
     }
-  }
+  },
+  buildGetStartFormFieldsListRequest: function (pipeId: PipeIdInput) : GraphqlRequest {
+    return { 
+      query: `query{
+        pipe(id: ${pipeId}){
+            start_form_fields {
+                id
+                type
+                index
+                label
+                options
+                required
+                help
+                description
+            }
+        }
+      }`
+    }
+  },
+  buildGetPipeMembersListRequest: function (pipeId: PipeIdInput) : GraphqlRequest {
+    return {
+      query: `query{
+        pipe(id: "${pipeId}"){
+          members{
+            user {
+              id
+              name
+            }
+          }
+        }
+      }`
+    }
+  },
+  buildGetPipeLabelsListRequest: function (pipeId: PipeIdInput) : GraphqlRequest {
+    return {
+      query: `query{
+        pipe(id: "${pipeId}"){
+          labels{
+            id
+            name
+          }
+        }
+      }`
+    }
+  },
+  buildCreateCardRequest: function (pipeId: PipeIdInput) : GraphqlRequest {
+    return {
+      query: `mutation{
+        createCard(input:{
+            pipe_id: ${pipeId}}
+            fields_attributes: [
+              ${"teste"}
+            ]
+          }) {
+            clientMutationId
+              card {
+                id
+              }
+            }
+          }`
+    }
+  },
+  buildGetCardWithFieldsByIdRequest: function (cardId: number) : GraphqlRequest {
+    return {
+      query: `query {
+        card (id: ${cardId}) {
+          id
+          uuid
+          age
+          title
+          comments_count
+          createdAt
+          current_phase_age
+          done
+          due_date
+          emailMessagingAddress
+          expired
+          late
+          started_current_phase_at
+          updated_at
+          url
+          creatorEmail
+          fields {
+            field{
+              label
+              id
+              type
+            }
+            name
+            value
+            array_value
+            report_value
+            date_value
+            datetime_value
+            float_value
+            filled_at
+            updated_at
+            phase_field {
+              id
+              label
+              phase {
+                id
+                name
+              }
+            }
+            label_values {
+              id
+              name
+            }
+            assignee_values {
+              id
+              email
+            }
+          }
+          attachments{
+            createdAt
+            createdBy {
+              id
+              name
+            }
+            field {
+              id
+              label
+            }
+            path
+            phase {
+              id
+              name
+            }
+            url
+          }
+          assignees {
+            name
+            email
+            id
+            locale
+            timeZone
+          }
+          inbox_emails{
+            bcc
+            body
+            cc
+            from
+            fromName
+            id
+            main_to
+            message_id
+            sent_via_automation
+            state
+            subject
+            to
+            updated_at
+            user {
+              id
+            }
+            attachments {
+              id
+              fileUrl
+              filename
+              public_url
+            }
+          }
+          parent_relations{
+            name
+            pipe {
+              id
+            }
+            repo
+            cards{
+              id
+              createdAt
+            }
+          }
+          child_relations{
+            name
+            pipe {
+              id
+            }
+            repo
+            cards{
+              id
+              createdAt
+            }
+          }
+          comments {
+            id
+            text
+            created_at
+            author_name
+          }
+          createdBy {
+            email
+            id
+            locale
+            name
+            timeZone
+          }
+          current_phase {
+            id
+            name
+            sequentialId
+            done
+            cards_count
+          }
+          pipe {
+            cards_count
+            emailAddress
+            id
+            name
+            phases{
+              id
+              name
+              fields{
+                id
+                label
+                description
+                type
+              }
+            }
+            start_form_fields{
+              id
+              label
+              description
+              type
+            }
+          }
+          phases_history {
+            duration
+            phase {
+              id
+              name
+            }
+            firstTimeIn
+            lastTimeIn
+            lastTimeOut
+            created_at
+            became_late
+          }
+        }
+      }`
+    }
+  },
 }

@@ -1,5 +1,8 @@
+export interface BaseResponse {
+  errors?: string[]
+}
 
-export interface GetPhasesListResponse {
+export interface GetPhasesListResponse extends BaseResponse {
   data: GetPhasesListResponseData
 }
 
@@ -16,7 +19,7 @@ interface PhaseListItem {
   name: string
 }
 
-export interface GetPipesListResponse {
+export interface GetPipesListResponse extends BaseResponse {
   data: GetPipesListResponseData
 }
 
@@ -33,12 +36,15 @@ interface PipeListItem {
   name: string
 }
 
-
-export interface CreatePipeWebhookResponse {
+export interface CreatePipeWebhookResponse extends BaseResponse {
   data: CreatePipeWebhookResponseData
 }
 
 interface CreatePipeWebhookResponseData {
+  createWebhook: CreatePipeWebhook
+}
+
+interface CreatePipeWebhook {
   clientMutationId: string
   webhook: PipeWebhook
 }
@@ -50,4 +56,91 @@ interface PipeWebhook {
   email: string
   name: string
   url: string
+}
+
+
+export interface GetStartFormFieldsResponse extends BaseResponse {
+  data: GetStartFormFieldsResponseData
+}
+
+interface GetStartFormFieldsResponseData {
+  pipe: PipeStartFormFields
+}
+
+interface PipeStartFormFields {
+  start_form_fields: StartFormField[]
+}
+
+type FieldType = 
+  | "assignee_select" 
+  | "attachment" 
+  | "checklist_horizontal" 
+  | "checklist_vertical" 
+  | "cnpj"
+  | "connector"
+  | "cpf"
+  | "currency"
+  | "date"
+  | "datetime"
+  | "due_date"
+  | "email"
+  | "id"
+  | "label_select"
+  | "long_text"
+  | "number"
+  | "phone"
+  | "radio_horizontal"
+  | "radio_vertical"
+  | "select"
+  | "short_text"
+  | "statement"
+  | "time"
+
+interface StartFormField {
+  id: string
+  type: FieldType
+  index: number
+  label: string
+  options: string[]
+  required: boolean
+  help: string
+  description: string
+}
+
+export interface GetPipeMemberListResponse extends BaseResponse {
+  data: GetPipeMemberListResponseData
+}
+
+interface GetPipeMemberListResponseData {
+  pipe: PipeMemberList
+}
+
+interface PipeMemberList {
+  members: PipeMember[]
+}
+
+interface PipeMember {
+  user: MemberUser
+}
+
+interface MemberUser {
+  id: string
+  name: string
+}
+
+export interface GetPipeLabelsListResponse extends BaseResponse {
+  data: GetPipeLabelsListResponseData
+}
+
+interface GetPipeLabelsListResponseData {
+  pipe: PipeLabelList
+}
+
+interface PipeLabelList {
+  labels: PipeLabel[]
+}
+
+interface PipeLabel {
+  id: string
+  name: string
 }

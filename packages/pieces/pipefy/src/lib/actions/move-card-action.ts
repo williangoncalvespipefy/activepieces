@@ -2,7 +2,7 @@ import { createAction } from '@activepieces/framework';
 import { httpClient } from '@activepieces/framework';
 import { Property } from '@activepieces/framework';
 
-import { CommonProps, buildGraphqlHttpRequest, GraphqlRequest, GraphqlRequestsHelper } from '../common';
+import { CommonProps, buildGraphqlHttpRequest, BaseResponse, GraphqlRequestsHelper } from '../common';
 
 export const moveCard = createAction({
 	name: 'move_card', // Must be a unique across the piece, this shouldn't be changed.
@@ -24,14 +24,14 @@ export const moveCard = createAction({
 		}),
 	},
 	async run(context) {
-    const result = await httpClient.sendRequest<GraphqlRequest>(
+    const result = await httpClient.sendRequest<BaseResponse>(
       buildGraphqlHttpRequest(
-        GraphqlRequestsHelper.buildMoveCardRequest(context.propsValue.pipe_id as number, context.propsValue.phase_id as number),
+        GraphqlRequestsHelper.buildMoveCardRequest(context.propsValue.card_id as number, context.propsValue.phase_id as number),
         context.propsValue.authentication
       )
     )
 
-    console.debug("Card move result", result)
+    console.debug("Card move result", result.body)
     return result.body
   }
 })

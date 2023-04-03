@@ -1,4 +1,4 @@
 export interface WebhookInformation {
-    webhookId: number
-    clientMutationId: string
+	webhookId: number
+	clientMutationId: string
 }
