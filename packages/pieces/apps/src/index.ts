@@ -1,4 +1,4 @@
-import { Piece } from '@activepieces/framework';
+import { Piece } from '@activepieces/pieces-framework';
 import { airtable } from '@activepieces/piece-airtable';
 import { asana } from '@activepieces/piece-asana';
 import { bannerbear } from '@activepieces/piece-bannerbear';
@@ -24,6 +24,7 @@ import { hackernews } from '@activepieces/piece-hackernews';
 import { http } from '@activepieces/piece-http';
 import { hubspot } from '@activepieces/piece-hubspot';
 import { mailchimp } from '@activepieces/piece-mailchimp';
+import { mindee } from '@activepieces/piece-mindee';
 import { openai } from '@activepieces/piece-openai';
 import { pipedrive } from '@activepieces/piece-pipedrive';
 import { pipefy } from '@activepieces/piece-pipefy';
@@ -42,20 +43,30 @@ import { wordpress } from '@activepieces/piece-wordpress';
 import { zoom } from '@activepieces/piece-zoom';
 import { generatebanners } from '@activepieces/piece-generatebanners';
 import { connections } from '@activepieces/piece-connections';
+import { notion } from '@activepieces/piece-notion';
 import { youtube } from '@activepieces/piece-youtube';
 import { intercom } from '@activepieces/piece-intercom';
 import { trello } from '@activepieces/piece-trello';
 import { square } from '@activepieces/piece-square';
+import { xero } from '@activepieces/piece-xero';
 import { delay } from '@activepieces/piece-delay';
 import { dataMapper } from '@activepieces/piece-data-mapper';
 import { schedule } from '@activepieces/piece-schedule';
+import { zohoCrm } from '@activepieces/piece-zoho-crm';
+import { zendesk } from '@activepieces/piece-zendesk';
+import { mattermost } from '@activepieces/piece-mattermost';
 import { mastodon } from '@activepieces/piece-mastodon';
 import { shopify } from '@activepieces/piece-shopify';
 import { constantContact } from '@activepieces/piece-constant-contact';
 import { salesforce } from '@activepieces/piece-salesforce';
-
+import { matrix } from "@activepieces/piece-matrix";
+import { smtp } from '@activepieces/piece-smtp';
+import { mailerLite } from '@activepieces/piece-mailer-lite';
+import { googleForms }  from '@activepieces/piece-google-forms';
+import { xml }  from '@activepieces/piece-xml';
 
 export const pieces: Piece[] = [
+    xml,
     airtable,
     asana,
     bannerbear,
@@ -82,6 +93,8 @@ export const pieces: Piece[] = [
     http,
     hubspot,
     mailchimp,
+    mailerLite,
+    mindee,
     openai,
     pipedrive,
     pipefy,
@@ -100,16 +113,24 @@ export const pieces: Piece[] = [
     wordpress,
     zoom,
     connections,
+    notion,
     youtube,
     square,
     delay,
     dataMapper,
     intercom,
     schedule,
+    xero,
+    zohoCrm,
+    zendesk,
+    mattermost,
     mastodon,
     shopify,
     constantContact,
-    salesforce
+    salesforce,
+    matrix,
+    smtp,
+    googleForms
 ].sort((a, b) => a.displayName > b.displayName ? 1 : -1);
 
 export const getPiece = (name: string): Piece | undefined => {

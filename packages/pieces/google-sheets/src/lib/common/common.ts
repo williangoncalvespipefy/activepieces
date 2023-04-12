@@ -1,4 +1,5 @@
-import { Property, OAuth2PropertyValue, httpClient, HttpMethod, AuthenticationType, HttpRequest } from "@activepieces/framework";
+import { Property, OAuth2PropertyValue } from "@activepieces/pieces-framework";
+import { httpClient, HttpMethod, AuthenticationType, HttpRequest } from "@activepieces/pieces-common";
 
 export const googleSheetsCommon = {
     baseUrl: "https://sheets.googleapis.com/v4/spreadsheets",
@@ -19,7 +20,7 @@ export const googleSheetsCommon = {
                 return {
                     disabled: true,
                     options: [],
-                    placeholder:'Please authenticate first'
+                    placeholder: 'Please authenticate first'
                 }
             }
             const authProp: OAuth2PropertyValue = propsValue['authentication'] as OAuth2PropertyValue;
@@ -54,7 +55,7 @@ export const googleSheetsCommon = {
                 return {
                     disabled: true,
                     options: [],
-                    placeholder:'Please select a spreadsheet first'
+                    placeholder: 'Please select a spreadsheet first'
                 }
             }
             const authProp: OAuth2PropertyValue = propsValue['authentication'] as OAuth2PropertyValue;
@@ -72,7 +73,8 @@ export const googleSheetsCommon = {
     }),
     getValues: getValues,
     appendGoogleSheetValues: appendGoogleSheetValues,
-    findSheetName:findSheetName
+    findSheetName: findSheetName,
+    deleteRow: deleteRow,
 }
 
 
@@ -138,6 +140,32 @@ async function getValues(spreadsheetId: string, accessToken: string, sheetId: nu
     const response = await httpClient.sendRequest<{ values: [string[]][] }>(request);
     // Get the rows from the response
     return response.body.values;
+}
+
+async function deleteRow(spreadsheetId: string, sheetId: number, rowIndex: number, accessToken: string) {
+    const request: HttpRequest = {
+        method: HttpMethod.POST,
+        url: `${googleSheetsCommon.baseUrl}/${spreadsheetId}/:batchUpdate`,
+        authentication: {
+            type: AuthenticationType.BEARER_TOKEN,
+            token: accessToken,
+        },
+        body: {
+            requests: [
+                {
+                    deleteDimension: {
+                        range: {
+                            sheetId: sheetId,
+                            dimension: "ROWS",
+                            startIndex: rowIndex,
+                            endIndex: rowIndex + 1,
+                        },
+                    },
+                },
+            ],
+        },
+    };
+    await httpClient.sendRequest(request);
 }
 
 export enum ValueInputOption {
