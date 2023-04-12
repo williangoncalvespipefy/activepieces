@@ -26,6 +26,7 @@ import { hubspot } from '@activepieces/piece-hubspot';
 import { mailchimp } from '@activepieces/piece-mailchimp';
 import { openai } from '@activepieces/piece-openai';
 import { pipedrive } from '@activepieces/piece-pipedrive';
+import { pipefy } from '@activepieces/piece-pipefy';
 import { posthog } from '@activepieces/piece-posthog';
 import { rssFeed } from '@activepieces/piece-rss';
 import { sendgrid } from '@activepieces/piece-sendgrid';
@@ -83,6 +84,7 @@ export const pieces: Piece[] = [
     mailchimp,
     openai,
     pipedrive,
+    pipefy,
     posthog,
     rssFeed,
     sendgrid,
