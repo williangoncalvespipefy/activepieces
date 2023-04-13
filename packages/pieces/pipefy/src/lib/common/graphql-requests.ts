@@ -1,4 +1,4 @@
-import { AuthenticationType, HttpMethod, HttpRequest } from "@activepieces/framework"
+import { HttpRequest, HttpMethod, AuthenticationType } from "@activepieces/pieces-common"
 
 export const PIPEFY_API_URL = "https://api.pipefy.com/graphql"
 
@@ -62,10 +62,10 @@ export const GraphqlRequestsHelper = {
       }`
     }
   },
-  buildGetPipesListRequest: function (organization_id: PipeIdInput) : GraphqlRequest {
+  buildGetPipesListRequest: function (organizationId: PipeIdInput) : GraphqlRequest {
     return {
       query: `query {
-        organization(id: ${organization_id}){
+        organization(id: ${organizationId}){
           pipes (include_publics: true){
             id
             name
@@ -263,6 +263,16 @@ export const GraphqlRequestsHelper = {
             id
             name
           }
+        }
+      }`
+    }
+  },
+  buildGetOrgsListRequest: function () : GraphqlRequest {
+    return {
+      query: `query {
+        organizations { 
+          id
+          name
         }
       }`
     }

@@ -1,7 +1,5 @@
-import { createAction } from '@activepieces/framework';
-import { httpClient } from '@activepieces/framework';
-import { Property } from '@activepieces/framework';
-
+import { Property, createAction } from '@activepieces/pieces-framework';
+import { httpClient } from '@activepieces/pieces-common';
 import { CommonProps, buildGraphqlHttpRequest, GraphqlRequestsHelper, MoveCardToPhaseResponse } from '../common';
 
 export const moveCard = createAction({
@@ -10,11 +8,7 @@ export const moveCard = createAction({
   description: 'Move card in Pipefy',
 	props: {
     authentication: CommonProps.authentication,
-		organization_id: Property.Number({
-			displayName: 'Organization',
-			description: 'Select a Pipefy Organization where you want to setup the card action.',
-			required: true,
-		}),
+		organization_id: CommonProps.orgsList,
     pipe_id: CommonProps.pipesList,
     phase_id: CommonProps.phasesList,
     card_id: Property.Number({
@@ -33,7 +27,7 @@ export const moveCard = createAction({
 
     console.debug("Card move result", result.body)
 
-    return result.body.errors || result.body.data
+    return result.body.data
   },
   sampleData:
   {

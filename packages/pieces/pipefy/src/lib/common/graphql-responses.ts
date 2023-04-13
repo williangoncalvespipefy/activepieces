@@ -5,6 +5,19 @@ export interface BaseResponse {
   errors?: string[]
 }
 
+export interface GetOrgsListResponse extends BaseResponse {
+  data: GetOrgsListResponseData
+}
+
+interface GetOrgsListResponseData { 
+  organizations: OrgListItem[]
+}
+
+interface OrgListItem {
+  id: string
+  name: string
+}
+
 export interface MoveCardToPhaseResponse extends BaseResponse {
   data: MoveCardToPhaseResponseData
 }
@@ -109,7 +122,6 @@ interface PipeWebhook {
   name: string
   url: string
 }
-
 
 export interface GetStartFormFieldsResponse extends BaseResponse {
   data: GetStartFormFieldsResponseData

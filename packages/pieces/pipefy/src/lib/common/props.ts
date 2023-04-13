@@ -1,7 +1,9 @@
-import { DynamicPropsValue, httpClient, Property } from "@activepieces/framework";
+import { httpClient } from "@activepieces/pieces-common";
+import { Property, DynamicPropsValue } from "@activepieces/pieces-framework";
 
 import {
   buildGraphqlHttpRequest,
+  GetOrgsListResponse,
   GetPhasesListResponse,
   GetPipeLabelsListResponse,
   GetPipeMemberListResponse,
@@ -49,13 +51,39 @@ export const CommonProps = {
     displayName: 'API Key',
     required: true,
   }),
+  orgsList: Property.Dropdown({
+    displayName: "Organization",
+    refreshers: ["authentication"],
+    description: "Select a Organization.",
+    required: true,
+    options: async (props: { authentication?: string; }) => {
+      if (!props.authentication) {
+        return {
+          disabled: true,
+          options: [],
+          placeholder: "Please fill the fields: API KEY."
+        }
+      }
+
+      const listResponse = await getOrgsList(props.authentication);
+      const options = listResponse.data.organizations.map(org => ({
+        label: org.name,
+        value: org.id,
+      }));
+
+      return {
+        disabled: false,
+        options,
+      };
+    }
+  }),
   pipesList: Property.Dropdown({
     displayName: "Pipe",
     refreshers: ["organization_id", "authentication"],
     description: "Select a Pipe where you want to setup the card action.",
     required: true,
-    options: async ({ authentication, organization_id}) => {
-      if (!authentication || !organization_id) {
+    options: async (props: { authentication?: string; organization_id?: number; }) => {
+      if (!props.authentication || !props.organization_id) {
         return {
           disabled: true,
           options: [],
@@ -63,7 +91,7 @@ export const CommonProps = {
         }
       }
 
-      const listResponse = await getPipesList(organization_id as number, authentication as string);
+      const listResponse = await getPipesList(props.organization_id, props.authentication);
       const options = listResponse.data.organization.pipes.map(phase => ({
         label: phase.name,
         value: phase.id,
@@ -80,8 +108,8 @@ export const CommonProps = {
     refreshers: ["pipe_id", "authentication"],
     description: "Select the Phase you want to move the card.",
     required: true,
-    options: async ({ authentication, pipe_id }) => {
-      if (!authentication || !pipe_id) {
+    options: async (props: { authentication?: string; pipe_id?: number; }) => {
+      if (!props.authentication || !props.pipe_id) {
         return {
           disabled: true,
           options: [],
@@ -89,7 +117,7 @@ export const CommonProps = {
         }
       }
 
-      const listResponse = await getPhasesList(pipe_id as number, authentication as string);
+      const listResponse = await getPhasesList(props.pipe_id, props.authentication);
       const options = listResponse.data.pipe.phases.map(phase => ({
         label: phase.name,
         value: phase.id,
@@ -112,6 +140,18 @@ export const CommonProps = {
       return await mapPipefyFieldsToPieceProperties(pipe_id as unknown as string, authentication as unknown as string)
     }
   }),
+}
+
+async function getOrgsList (apiKey: string) : Promise<GetOrgsListResponse> {
+  const result = await httpClient.sendRequest<GetOrgsListResponse>(
+    buildGraphqlHttpRequest(
+      GraphqlRequestsHelper.buildGetOrgsListRequest(),
+      apiKey
+    )
+  )
+
+  console.debug("Orgs List found", JSON.stringify(result, null, 2))
+  return result.body
 }
 
 async function getPipesList (organizationId: number, apiKey: string) : Promise<GetPipesListResponse> {

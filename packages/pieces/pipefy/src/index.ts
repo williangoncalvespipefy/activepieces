@@ -1,8 +1,9 @@
-import { createPiece } from '@activepieces/framework';
+import { createPiece } from '@activepieces/pieces-framework';
 import packageJson from '../package.json';
 import { createCard } from './lib/actions/create-card-action';
 import { moveCard } from './lib/actions/move-card-action';
 import { cardCreated } from './lib/triggers/card-created-trigger';
+import { cardMoved } from './lib/triggers/card-moved-trigger';
 import { getCardById } from './lib/actions/get-card-by-id-action';
 
 export const pipefy = createPiece({
@@ -19,5 +20,6 @@ export const pipefy = createPiece({
   ],
   triggers: [
     cardCreated,
+    cardMoved,
   ],
 });
