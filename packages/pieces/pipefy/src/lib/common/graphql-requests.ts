@@ -270,9 +270,31 @@ export const GraphqlRequestsHelper = {
   buildGetOrgsListRequest: function () : GraphqlRequest {
     return {
       query: `query {
-        organizations { 
+        organizations {
           id
           name
+        }
+      }`
+    }
+  },
+  buildUpdateCardFieldValueRequest: function (cardId: number, cardFielId: string, value: string): GraphqlRequest {
+    return {
+      query: `mutation {
+        updateCardField(input: {
+            card_id: ${cardId},
+            field_id: "${cardFielId}",
+            new_value: "${value}"
+          }) {
+          card {
+            fields {
+              value
+              field {
+                label
+                id
+              }
+            }
+          }
+          success
         }
       }`
     }
